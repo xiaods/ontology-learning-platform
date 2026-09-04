@@ -1,0 +1,72 @@
+{
+  "schema_version": "0.1",
+  "updated_at": "2026-09-02T18:26:38+08:00",
+  "common_runtime_root": "/Users/xiaodeshi/.codex/loopx",
+  "goals": [
+    {
+      "id": "palantir-ontology-research-goal",
+      "domain": "project-goal-control-plane",
+      "status": "active",
+      "role": "controller",
+      "parent_goal_id": null,
+      "repo": "/Users/xiaodeshi/Documents/Code/palantir-ontology-research",
+      "state_file": ".codex/goals/palantir-ontology-research-goal/ACTIVE_GOAL_STATE.md",
+      "authority_sources": [],
+      "adapter": {
+        "kind": "read_only_project_map_v0",
+        "status": "connected-read-only"
+      },
+      "spawn_policy": {
+        "mode": "default",
+        "allowed": false,
+        "max_children": 3,
+        "allowed_domains": []
+      },
+      "coordination": {
+        "write_scope": [],
+        "requires_parent_approval": [
+          "write",
+          "publish",
+          "production-action"
+        ],
+        "registered_agents": [
+          "research-agent-1"
+        ],
+        "agent_model": "peer_v1"
+      },
+      "execution_profile": {
+        "cadence": "bounded_progress_segment",
+        "minimum_scale": "multi_surface_or_implementation",
+        "must_include": [
+          "coherent_artifact",
+          "targeted_validation",
+          "state_writeback"
+        ],
+        "spend_rule": "spend_only_after_artifact_validation_writeback",
+        "outcome_floor": {
+          "required_when": "after_surface_progress_streak",
+          "surface_streak_threshold": 3,
+          "outcome_markers": [],
+          "surface_only_hints": [],
+          "must_advance": [
+            "primary_goal_outcome"
+          ],
+          "avoid": [
+            "surface_only_progress_loop"
+          ],
+          "if_unavailable": "report_blocker_without_spend"
+        },
+        "degradation_policy": {
+          "small_scale_streak_threshold": 2,
+          "on_degradation": "require_blocker_or_expand_next_batch"
+        }
+      },
+      "next_probe": "loopx --registry .loopx/registry.json check --scan-root /Users/xiaodeshi/Documents/Code/palantir-ontology-research",
+      "guards": [
+        "read-only by default",
+        "do not mutate production systems without explicit user approval",
+        "keep private evidence out of public commits"
+      ]
+    }
+  ]
+}
