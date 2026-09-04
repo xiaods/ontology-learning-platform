@@ -1,0 +1,24 @@
+# macOS
+.DS_Store
+
+# LoopX internal state (optional - keep for reproducibility)
+# .loopx/
+# .codex/goals/
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+env/
+
+# OS
+Thumbs.db
