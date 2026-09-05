@@ -22,3 +22,7 @@ env/
 
 # OS
 Thumbs.db
+
+# Project: only track course materials, exclude refs and LoopX internal state
+refs/
+.codex/
