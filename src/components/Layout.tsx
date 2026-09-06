@@ -24,6 +24,7 @@ const navSections = [
   {
     label: '应用构建',
     items: [
+      { href: '/apps/workflow', label: 'Workflow Simulator', icon: '🎬', desc: 'Action 流程模拟' },
       { href: '/apps/workshop', label: 'Workshop', icon: '🛠️', desc: '应用组装台' },
       { href: '/apps/investigation', label: 'Investigation', icon: '🔍', desc: '实例探索查询' },
     ],
