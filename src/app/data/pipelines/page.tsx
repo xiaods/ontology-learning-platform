@@ -592,6 +592,8 @@ function BuildView() {
   const [selectedTarget, setSelectedTarget] = useState<string | null>(null);
   const [rules, setRules] = useState<TransformRule[]>([]);
   const [previewRecord, setPreviewRecord] = useState<DataRecord | null>(null);
+  const [dragOver, setDragOver] = useState<string | null>(null);
+  const [draggedField, setDraggedField] = useState<string | null>(null);
 
   const source = sourceSystems.find(s => s.id === selectedSource);
   const target = objectTypes.find(o => o.id === selectedTarget);
@@ -730,75 +732,122 @@ function BuildView() {
         </div>
       )}
 
-      {/* Step 2: Map fields */}
+      {/* Step 2: Map fields with drag & drop */}
       {step === 2 && source && target && (
         <div className="space-y-4">
           <div className="rounded-xl border border-gray-800 bg-gray-900 p-4">
-            <h3 className="mb-3 text-sm font-semibold text-white">字段映射 — 将源字段拖到目标属性</h3>
+            <h3 className="mb-1 text-sm font-semibold text-white">字段映射</h3>
+            <p className="mb-4 text-xs text-gray-500">拖拽左侧源字段到右侧目标属性上，建立映射关系</p>
+
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-              {/* Source fields */}
+              {/* Source fields — draggable */}
               <div>
                 <div className="mb-2 text-xs text-blue-400 font-medium">源字段 ({source.name})</div>
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   {source.fields.map(f => {
                     const isMapped = rules.some(r => r.sourceField === f.name);
+                    const isDragging = draggedField === f.name;
                     return (
-                      <div key={f.name} className={`rounded-lg p-2 text-xs ${isMapped ? 'bg-blue-900/20 border border-blue-800' : 'bg-gray-800'}`}>
+                      <div
+                        key={f.name}
+                        draggable={!isMapped}
+                        onDragStart={(e) => {
+                          setDraggedField(f.name);
+                          e.dataTransfer.setData('text/plain', f.name);
+                          e.dataTransfer.effectAllowed = 'move';
+                        }}
+                        onDragEnd={() => {
+                          setDraggedField(null);
+                          setDragOver(null);
+                        }}
+                        className={`rounded-lg p-2.5 text-xs cursor-grab active:cursor-grabbing transition-all ${
+                          isDragging ? 'opacity-40 scale-95' : ''
+                        } ${
+                          isMapped
+                            ? 'bg-blue-900/20 border border-blue-800 opacity-50'
+                            : 'bg-gray-800 hover:bg-gray-700 hover:ring-1 hover:ring-blue-600'
+                        }`}
+                      >
                         <div className="flex items-center gap-2">
+                          <span className="text-gray-600 select-none">⠿</span>
                           <code className="text-blue-400 font-mono">{f.name}</code>
                           <span className="text-gray-600">{f.type}</span>
                         </div>
-                        <div className="text-gray-500 font-mono text-xs">e.g. {f.example}</div>
+                        <div className="mt-0.5 pl-5 text-gray-500 font-mono text-xs">e.g. {f.example}</div>
                       </div>
                     );
                   })}
                 </div>
               </div>
 
-              {/* Mapping arrows */}
-              <div className="flex flex-col items-center justify-center gap-1">
-                <div className="text-xs text-gray-500 mb-2">映射关系</div>
-                {rules.length === 0 && <div className="text-xs text-gray-700">点击下方开始映射</div>}
+              {/* Mapping arrows — center panel */}
+              <div className="flex flex-col items-center justify-start gap-1.5 pt-6">
+                <div className="text-xs text-gray-500 mb-1">映射关系</div>
+                {rules.length === 0 && (
+                  <div className="flex flex-col items-center gap-2 py-8">
+                    <div className="text-3xl text-gray-700 animate-bounce">↕</div>
+                    <div className="text-xs text-gray-600 text-center">拖拽源字段<br/>到右侧目标属性</div>
+                  </div>
+                )}
                 {rules.map((rule, i) => (
-                  <div key={i} className="flex items-center gap-1 rounded bg-gray-800 px-2 py-1 text-xs w-full">
-                    <code className="text-blue-400 font-mono truncate flex-1">{rule.sourceField}</code>
-                    <span className="text-amber-400">{rule.transform === 'direct' ? '→' : '⚡'}</span>
+                  <div key={i} className="flex items-center gap-1.5 rounded-lg bg-gray-800 border border-gray-700 px-3 py-2 text-xs w-full">
+                    <code className="text-blue-400 font-mono truncate flex-1 text-right">{rule.sourceField}</code>
+                    <span className="text-amber-400 text-sm">{rule.transform === 'direct' ? '→' : '⚡'}</span>
                     <code className="text-emerald-400 font-mono truncate flex-1">{rule.targetProperty}</code>
-                    <button onClick={() => removeRule(i)} className="text-gray-600 hover:text-red-400">✕</button>
+                    <button onClick={() => removeRule(i)} className="ml-1 text-gray-600 hover:text-red-400 transition-colors">✕</button>
                   </div>
                 ))}
               </div>
 
-              {/* Target properties */}
+              {/* Target properties — drop zones */}
               <div>
                 <div className="mb-2 text-xs text-emerald-400 font-medium">目标属性 ({target.name})</div>
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   {target.properties.map(p => {
                     const mappedRule = rules.find(r => r.targetProperty === p.name);
+                    const isDragTarget = dragOver === p.name;
                     return (
-                      <button
+                      <div
                         key={p.name}
-                        onClick={() => {
-                          // Find first unmapped source field
-                          const unmapped = source.fields.find(f => !rules.some(r => r.sourceField === f.name));
-                          if (unmapped) addRule(unmapped.name, p.name);
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          e.dataTransfer.dropEffect = 'move';
+                          if (!mappedRule) setDragOver(p.name);
                         }}
-                        className={`w-full rounded-lg p-2 text-left text-xs transition-all ${
+                        onDragLeave={() => {
+                          if (dragOver === p.name) setDragOver(null);
+                        }}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          const fieldName = e.dataTransfer.getData('text/plain') || draggedField;
+                          if (fieldName && !mappedRule) {
+                            addRule(fieldName, p.name);
+                          }
+                          setDragOver(null);
+                          setDraggedField(null);
+                        }}
+                        className={`rounded-lg p-2.5 text-xs transition-all ${
                           mappedRule
-                            ? 'bg-emerald-900/20 border border-emerald-800'
-                            : 'bg-gray-800 hover:bg-gray-700 border border-transparent'
+                            ? 'bg-emerald-900/20 border border-emerald-700'
+                            : isDragTarget
+                              ? 'bg-blue-900/30 border-2 border-blue-500 ring-2 ring-blue-500/30 scale-[1.02]'
+                              : 'bg-gray-800 border border-dashed border-gray-700 hover:border-gray-600'
                         }`}
                       >
                         <div className="flex items-center gap-2">
+                          <span className={`${mappedRule ? 'text-emerald-400' : 'text-gray-600'}`}>{mappedRule ? '✓' : '○'}</span>
                           <code className="text-emerald-400 font-mono">{p.name}</code>
                           <span className="text-gray-600">{p.type}</span>
+                          {p.required && <span className="text-red-400 text-xs">*</span>}
                         </div>
                         {mappedRule ? (
-                          <div className="text-xs text-gray-500">← {mappedRule.sourceField}</div>
+                          <div className="mt-0.5 pl-5 text-xs text-gray-500">← {mappedRule.sourceField}</div>
                         ) : (
-                          <div className="text-xs text-gray-700">点击映射</div>
+                          <div className={`mt-0.5 pl-5 text-xs ${isDragTarget ? 'text-blue-400' : 'text-gray-700'}`}>
+                            {isDragTarget ? '释放以建立映射' : '拖入源字段'}
+                          </div>
                         )}
-                      </button>
+                      </div>
                     );
                   })}
                 </div>
