@@ -1,84 +1,126 @@
 'use client';
 
-import { objectTypes } from '@/data/ontology-model';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { objectTypes, linkTypes, pipelineStages } from '@/data/ontology-model';
+import { BlueprintView } from './blueprint-view';
+import { MappingView } from './mapping-view';
+import { SyncMonitorView } from './sync-monitor-view';
+import { dataSources, DataSource } from './sources-data';
 
-interface DataSource {
-  id: string;
-  name: string;
-  type: string;
-  status: 'connected' | 'error' | 'syncing';
-  lastSync: string;
-  objects: string[];
-  icon: string;
+export interface Particle {
+  id: number;
+  sourceId: string;
+  targetObject: string;
+  progress: number;
+  color: string;
 }
 
-const dataSources: DataSource[] = [
-  { id: 'sap', name: 'SAP ERP', type: 'Database', status: 'connected', lastSync: '2 min ago', objects: ['raw-material', 'supplier', 'purchase-order', 'product'], icon: '🗄️' },
-  { id: 'wms', name: 'WMS', type: 'Database', status: 'connected', lastSync: '5 min ago', objects: ['raw-material'], icon: '📦' },
-  { id: 'mes', name: 'MES System', type: 'API', status: 'connected', lastSync: '30 min ago', objects: ['production-line'], icon: '⚙️' },
-  { id: 'plm', name: 'PLM', type: 'API', status: 'connected', lastSync: '1 hour ago', objects: ['product', 'bill-of-materials'], icon: '📐' },
-  { id: 'supplier-portal', name: 'Supplier Portal', type: 'Web App', status: 'connected', lastSync: '1 hour ago', objects: ['supplier'], icon: '🌐' },
-  { id: 'kafka', name: 'Kafka Event Stream', type: 'Stream', status: 'syncing', lastSync: '实时', objects: ['supply-disruption'], icon: '📡' },
-];
-
 export default function DataSourcesPage() {
+  const [selectedSource, setSelectedSource] = useState<DataSource | null>(null);
+  const [selectedMapping, setSelectedMapping] = useState<number | null>(null);
+  const [isFlowing, setIsFlowing] = useState(true);
+  const [particles, setParticles] = useState<Particle[]>([]);
+  const [activeTab, setActiveTab] = useState<'blueprint' | 'mapping' | 'sync'>('blueprint');
+  const [syncLogs, setSyncLogs] = useState<{ time: string; source: string; action: string; records: number; status: string }[]>([]);
+  const particleIdRef = useRef(0);
+
+  useEffect(() => {
+    if (!isFlowing) return;
+    const interval = setInterval(() => {
+      setParticles(prev => {
+        let updated = prev.map(p => ({ ...p, progress: p.progress + 0.012 })).filter(p => p.progress <= 1);
+        if (updated.length < 25) {
+          const source = dataSources[Math.floor(Math.random() * dataSources.length)];
+          if (source.objects.length > 0) {
+            const obj = source.objects[Math.floor(Math.random() * source.objects.length)];
+            updated.push({ id: particleIdRef.current++, sourceId: source.id, targetObject: obj.objectId, progress: 0, color: source.color });
+          }
+        }
+        return updated;
+      });
+    }, 35);
+    return () => clearInterval(interval);
+  }, [isFlowing]);
+
+  useEffect(() => {
+    if (!isFlowing) return;
+    const interval = setInterval(() => {
+      const source = dataSources[Math.floor(Math.random() * dataSources.length)];
+      const actions = ['extracted', 'transformed', 'validated', 'loaded', 'indexed'];
+      const action = actions[Math.floor(Math.random() * actions.length)];
+      const records = Math.floor(Math.random() * 500 + 10);
+      const now = new Date();
+      const time = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+      setSyncLogs(prev => [{ time, source: source.name, action, records, status: 'ok' }, ...prev].slice(0, 8));
+    }, 1500);
+    return () => clearInterval(interval);
+  }, [isFlowing]);
+
+  const selectedObject = useMemo(() => {
+    if (!selectedSource || selectedMapping === null) return null;
+    return selectedSource.objects[selectedMapping];
+  }, [selectedSource, selectedMapping]);
+
   return (
     <div className="mx-auto max-w-7xl">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white">Data Sources</h1>
-        <p className="text-sm text-gray-400">数据源管理 — 连接外部系统到 Ontology</p>
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-white">Data Sources Blueprint</h1>
+          <p className="text-sm text-gray-400">外部系统 → 数据映射 → 本体对象 — 完整数据链路</p>
+        </div>
+        <div className="flex gap-2">
+          <button onClick={() => setIsFlowing(!isFlowing)} className={`btn ${isFlowing ? 'btn-primary' : 'btn-secondary'}`}>
+            {isFlowing ? '⏸ 停止流动' : '▶ 数据流动'}
+          </button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        {dataSources.map(source => (
-          <div key={source.id} className="card">
-            <div className="mb-3 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="text-xl">{source.icon}</span>
-                <div>
-                  <div className="font-medium text-gray-200">{source.name}</div>
-                  <div className="text-xs text-gray-500">{source.type}</div>
-                </div>
-              </div>
-              <span className={`badge ${
-                source.status === 'connected' ? 'bg-emerald-900/50 text-emerald-400' :
-                source.status === 'syncing' ? 'bg-blue-900/50 text-blue-400' :
-                'bg-red-900/50 text-red-400'
-              }`}>
-                {source.status === 'connected' ? '●' : source.status === 'syncing' ? '◌' : '○'} {source.status}
-              </span>
-            </div>
-
-            <div className="mb-3 text-xs text-gray-500">Last sync: {source.lastSync}</div>
-
-            <div>
-              <div className="mb-1 text-xs text-gray-500">Feeds into:</div>
-              <div className="flex flex-wrap gap-1">
-                {source.objects.map(objId => {
-                  const obj = objectTypes.find(o => o.id === objId);
-                  return obj ? (
-                    <span key={objId} className="badge bg-gray-800 text-gray-400">
-                      {obj.icon} {obj.name}
-                    </span>
-                  ) : null;
-                })}
-              </div>
-            </div>
-          </div>
+      <div className="mb-4 flex gap-1 rounded-lg bg-gray-900 p-1 border border-gray-800">
+        {([
+          { id: 'blueprint' as const, label: '🔗 连接蓝图', desc: '源系统→本体映射' },
+          { id: 'mapping' as const, label: '📋 字段映射', desc: '字段级转换规则' },
+          { id: 'sync' as const, label: '📊 同步监控', desc: '实时同步日志' },
+        ]).map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex-1 rounded-md px-3 py-2 text-xs transition-all ${activeTab === tab.id ? 'bg-gray-800 text-white shadow-sm' : 'text-gray-500 hover:text-gray-300'}`}
+          >
+            <div className="font-medium">{tab.label}</div>
+            <div className="text-xs opacity-60">{tab.desc}</div>
+          </button>
         ))}
       </div>
 
-      {/* How it works */}
-      <div className="mt-8 rounded-xl border border-gray-800 bg-gray-900 p-5">
-        <h3 className="mb-3 text-sm font-semibold text-white">Data Integration Architecture</h3>
-        <div className="flex flex-wrap items-center gap-2 text-xs">
-          {['Source Systems', '→', 'Pipeline (Extract/Transform/Load)', '→', 'Ontology Object Types', '→', 'Applications & Agents'].map((step, i) => (
-            <span key={i} className={step === '→' ? 'text-gray-600' : 'rounded bg-gray-800 px-2 py-1 text-gray-300'}>
-              {step}
-            </span>
-          ))}
-        </div>
-      </div>
+      {activeTab === 'blueprint' && (
+        <BlueprintView
+          particles={particles}
+          isFlowing={isFlowing}
+          selectedSource={selectedSource}
+          onSelectSource={setSelectedSource}
+          selectedMapping={selectedMapping}
+          onSelectMapping={setSelectedMapping}
+        />
+      )}
+
+      {activeTab === 'mapping' && (
+        <MappingView
+          selectedSource={selectedSource}
+          onSelectSource={setSelectedSource}
+          selectedMapping={selectedMapping}
+          onSelectMapping={setSelectedMapping}
+          selectedObject={selectedObject}
+        />
+      )}
+
+      {activeTab === 'sync' && (
+        <SyncMonitorView
+          syncLogs={syncLogs}
+          isFlowing={isFlowing}
+          selectedSource={selectedSource}
+          onSelectSource={setSelectedSource}
+        />
+      )}
     </div>
   );
 }
