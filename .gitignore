@@ -23,6 +23,10 @@ env/
 # OS
 Thumbs.db
 
+# Exclude course materials (local only, not part of the platform)
+textbook/
+materials/
+
 # Project: only track course materials, exclude refs and LoopX internal state
 refs/
 .codex/
