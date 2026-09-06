@@ -26,3 +26,14 @@ Thumbs.db
 # Project: only track course materials, exclude refs and LoopX internal state
 refs/
 .codex/
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+
+# Build
+*.log
+npm-debug.log*
