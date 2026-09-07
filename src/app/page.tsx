@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import Link from 'next/link';
+import OntologyJourney from '@/components/OntologyJourney';
 import { objectTypes, linkTypes, actionTypes, interfaceTypes } from '@/data/ontology-model';
 
 // Layout positions for the ontology graph
@@ -25,6 +26,7 @@ interface Particle {
 }
 
 export default function OntologyExplorerPage() {
+  const [journeyNodes, setJourneyNodes] = useState<string[]>([]);
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
   const [showActions, setShowActions] = useState(true);
@@ -184,6 +186,9 @@ export default function OntologyExplorerPage() {
         </div>
       </div>
 
+      <OntologyJourney onStageChange={setJourneyNodes} />
+      <div id="ontology-graph" className="mb-3 scroll-mt-20 text-sm text-gray-400">本体关系图{journeyNodes.length > 0 && <span className="ml-3 text-blue-300">蓝色高亮：当前环节涉及的对象与关系</span>}</div>
+
       {/* Path Finder */}
       <div className="mb-4 flex items-center gap-3 rounded-lg border border-gray-800 bg-gray-900 px-4 py-2">
         <span className="text-xs text-gray-500">路径查找:</span>
@@ -236,7 +241,7 @@ export default function OntologyExplorerPage() {
               {/* Link edges */}
               {linkTypes.map((link, i) => {
                 const { path } = getLinkPath(link);
-                const isHighlighted = selectedNode && (link.sourceObject === selectedNode || link.targetObject === selectedNode);
+                const isHighlighted = (selectedNode && (link.sourceObject === selectedNode || link.targetObject === selectedNode)) || (journeyNodes.includes(link.sourceObject) && journeyNodes.includes(link.targetObject));
                 const isInPath = highlightedPath.length > 0 && (
                   highlightedPath.includes(link.sourceObject) && highlightedPath.includes(link.targetObject) &&
                   Math.abs(highlightedPath.indexOf(link.sourceObject) - highlightedPath.indexOf(link.targetObject)) === 1
@@ -289,6 +294,7 @@ export default function OntologyExplorerPage() {
               {objectTypes.map(obj => {
                 const pos = getNodePosition(obj.id);
                 const isSelected = selectedNode === obj.id;
+                const isJourneyNode = journeyNodes.includes(obj.id);
                 const isHovered = hoveredNode === obj.id;
                 const isConnected = selectedNode && linkTypes.some(
                   l => (l.sourceObject === selectedNode && l.targetObject === obj.id) ||
@@ -298,7 +304,7 @@ export default function OntologyExplorerPage() {
                 const isSearchTo = searchTo === obj.id;
                 const isInPath = highlightedPath.includes(obj.id);
                 const isPulsing = pulseNodes.has(obj.id);
-                const dimmed = selectedNode && !isSelected && !isConnected && !isInPath;
+                const dimmed = journeyNodes.length > 0 ? !isJourneyNode : selectedNode && !isSelected && !isConnected && !isInPath;
 
                 return (
                   <g
@@ -333,8 +339,8 @@ export default function OntologyExplorerPage() {
                     <rect
                       x={pos.x - 52} y={pos.y - 28} width="104" height="56" rx="8"
                       fill={isSelected ? obj.color + '30' : isHovered ? obj.color + '15' : '#111827'}
-                      stroke={isInPath ? '#34d399' : isSelected ? obj.color : isHovered ? obj.color + '80' : '#374151'}
-                      strokeWidth={isSelected || isInPath ? 2 : 1}
+                      stroke={isInPath ? '#34d399' : isJourneyNode ? '#60a5fa' : isSelected ? obj.color : isHovered ? obj.color + '80' : '#374151'}
+                      strokeWidth={isSelected || isInPath || isJourneyNode ? 2 : 1}
                       style={{ transition: 'all 0.2s' }}
                     />
 
