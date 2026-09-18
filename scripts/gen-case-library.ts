@@ -10,6 +10,7 @@ import {
   fidelityLabels,
   fictionalExamples,
   productDemos,
+  interactiveCases,
 } from '../src/data/cases/library';
 import type { LibraryEntry } from '../src/data/cases/types';
 
@@ -69,6 +70,19 @@ function render(): string {
     for (const e of entries) lines.push(tableRow(e));
     lines.push('');
   }
+
+  lines.push('## 可交互教学模拟');
+lines.push('');
+lines.push('以下案例提供浏览器内交互式模拟，用于教学演示。模拟中的对象、记录数与运行结果均为模拟数据，不代表真实系统。');
+lines.push('');
+lines.push('| 案例 | 行业 | 模拟场景 |');
+lines.push('| --- | --- | --- |');
+  for (const c of interactiveCases) {
+    const entry = caseLibrary.find(e => e.interactiveSlug === c.slug);
+    const label = entry ? `${c.name}（${entry.sourceDate}）` : c.name;
+    lines.push(`| ${label} | ${c.industry} | ${c.scenario} |`);
+  }
+lines.push('');
 
   lines.push('## 产品能力演示（不指明客户）');
   lines.push('');

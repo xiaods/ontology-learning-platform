@@ -32,7 +32,14 @@
         "registered_agents": [
           "research-agent-1"
         ],
-        "agent_model": "peer_v1"
+        "agent_model": "peer_v1",
+        "thread_agent_bindings": [
+          {
+            "thread_id": "01a0aa55-a83a-7402-91b6-7a2150034c18",
+            "host_surface": "codex-app",
+            "agent_id": "research-agent-1"
+          }
+        ]
       },
       "execution_profile": {
         "cadence": "bounded_progress_segment",

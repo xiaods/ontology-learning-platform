@@ -23,6 +23,12 @@ export const interactiveCases: { slug: string; name: string; industry: string; s
     industry: '非结构化数据 / AI',
     scenario: '4000 万份文档结构化为 9.29 亿条边的代理式知识图谱',
   },
+  {
+    slug: 'mccarthy',
+    name: 'McCarthy Building Companies',
+    industry: '建筑工程',
+    scenario: 'Pulse AI 运营套件覆盖 7 大工地用例，Ontology 驱动的跨场景联动',
+  },
 ];
 
 export const caseLibrary: LibraryEntry[] = [
@@ -148,6 +154,7 @@ export const caseLibrary: LibraryEntry[] = [
     sourceDate: '2026-06-04',
     group: 'aipcon-10',
     fidelity: 'fact',
+    interactiveSlug: 'mccarthy',
   },
   {
     id: 'usda',
