@@ -40,10 +40,10 @@ jobs:
         run: npm run verify:simulation
 
       - name: Build and deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: deploy --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT }}
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-          preCommands: npx opennextjs-cloudflare build
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_PAGES_PROJECT: ${{ vars.CLOUDFLARE_PAGES_PROJECT }}
+        run: |
+          npx opennextjs-cloudflare build
+          npx opennextjs-cloudflare deploy --project-name="${CLOUDFLARE_PAGES_PROJECT}"
