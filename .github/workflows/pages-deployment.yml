@@ -39,8 +39,8 @@ jobs:
       - name: Verify simulation
         run: npm run verify:simulation
 
-      - name: Build static site
-        run: npm run build
+      - name: Build OpenNext site
+        run: npx opennextjs-cloudflare build
 
       - name: Set production branch
         if: github.ref == 'refs/heads/main'
@@ -60,5 +60,5 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy out --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT }}
+          command: deploy --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT }}
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
