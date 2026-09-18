@@ -43,8 +43,7 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          CLOUDFLARE_PAGES_PROJECT: ${{ vars.CLOUDFLARE_PAGES_PROJECT }}
+          CLOUDFLARE_PAGES_PROJECT: ontology-learning
         run: |
-          echo "PAGES_PROJECT=${CLOUDFLARE_PAGES_PROJECT}"
           npx opennextjs-cloudflare build
           npx opennextjs-cloudflare deploy --project-name="${CLOUDFLARE_PAGES_PROJECT}"
