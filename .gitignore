@@ -45,3 +45,11 @@ npm-debug.log*
 
 # LoopX process locks are ephemeral
 .loopx/*.lock
+
+# OpenNext
+.open-next
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example

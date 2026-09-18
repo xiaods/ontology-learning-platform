@@ -2,7 +2,7 @@ const { PHASE_DEVELOPMENT_SERVER } = require('next/constants');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
+  output: 'standalone',
   reactStrictMode: true,
   images: {
     unoptimized: true,
@@ -14,3 +14,5 @@ module.exports = (phase) => ({
   ...nextConfig,
   distDir: phase === PHASE_DEVELOPMENT_SERVER ? '.next-dev' : '.next',
 });
+
+import('@opennextjs/cloudflare').then(m => m.initOpenNextCloudflareForDev());
