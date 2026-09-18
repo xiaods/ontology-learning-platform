@@ -45,5 +45,6 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_PAGES_PROJECT: ${{ vars.CLOUDFLARE_PAGES_PROJECT }}
         run: |
+          echo "PAGES_PROJECT=${CLOUDFLARE_PAGES_PROJECT}"
           npx opennextjs-cloudflare build
           npx opennextjs-cloudflare deploy --project-name="${CLOUDFLARE_PAGES_PROJECT}"
