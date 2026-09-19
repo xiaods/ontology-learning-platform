@@ -160,7 +160,7 @@ export default function DataSourcesPage() {
 
   return (
     <div className="mx-auto max-w-7xl">
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-white">Data Sources Blueprint</h1>
           <p className="text-sm text-gray-400">字段如何从外部系统转换为本体对象 — 完整转换链路</p>
@@ -174,8 +174,8 @@ export default function DataSourcesPage() {
       {activeTab === 'blueprint' && (
         <div className="space-y-6">
           {/* Blueprint SVG */}
-          <div className="rounded-xl border border-gray-800 bg-gray-900 overflow-hidden">
-            <svg className="w-full" viewBox="0 0 900 440" style={{ height: 440 }}>
+          <div className="rounded-xl border border-gray-800 bg-gray-900 overflow-x-auto">
+            <svg className="w-full min-w-[760px] lg:min-w-0" viewBox="0 0 900 440" style={{ height: 440 }}>
               <defs>
                 <filter id="glow">
                   <feGaussianBlur stdDeviation="2" result="blur" />
@@ -426,7 +426,7 @@ export default function DataSourcesPage() {
 
           {/* Step-by-step transform animation */}
           <div className="rounded-xl border border-gray-800 bg-gray-900 p-4">
-            <div className="mb-4 flex items-center justify-between">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <h3 className="text-sm font-semibold text-white">Step-by-Step Transform</h3>
               <div className="flex gap-1">
                 {currentMapping.fields.map((_, i) => (

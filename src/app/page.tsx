@@ -140,7 +140,7 @@ export default function OntologyExplorerPage() {
   return (
     <div className="mx-auto max-w-7xl">
       {/* Header */}
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-white">Ontology Explorer</h1>
           <p className="text-sm text-gray-400">交互式本体图谱 — 数据流可视化</p>
@@ -162,10 +162,11 @@ export default function OntologyExplorerPage() {
       </div>
 
       <OntologyJourney onStageChange={setJourneyNodes} />
+      <p className="mb-2 text-xs text-gray-500 lg:hidden">左右滑动查看完整图谱，轻点节点查看详情。</p>
       <div id="ontology-graph" className="mb-3 scroll-mt-20 text-sm text-gray-400">本体关系图{journeyNodes.length > 0 && <span className="ml-3 text-blue-300">蓝色高亮：当前环节涉及的对象与关系</span>}</div>
 
       {/* Path Finder */}
-      <div className="mb-4 flex items-center gap-3 rounded-lg border border-gray-800 bg-gray-900 px-4 py-2">
+      <div className="mb-4 flex flex-wrap items-center gap-3 rounded-lg border border-gray-800 bg-gray-900 px-4 py-2">
         <span className="text-xs text-gray-500">路径查找:</span>
         <span className={`badge ${searchFrom ? 'bg-blue-900/50 text-blue-300' : 'bg-gray-800 text-gray-500'}`}>
           {searchFrom ? objectTypes.find(o => o.id === searchFrom)?.name : '选择起点'}
@@ -190,7 +191,7 @@ export default function OntologyExplorerPage() {
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
         {/* Graph Canvas */}
         <div className="lg:col-span-3">
-          <div className="relative overflow-hidden rounded-xl border border-gray-800 bg-gray-900" style={{ height: 540 }}>
+          <div className="graph-viewport relative overflow-x-auto rounded-xl border border-gray-800 bg-gray-900" style={{ height: 540 }}>
             {/* Grid */}
             <svg className="absolute inset-0 h-full w-full opacity-10">
               <defs>
@@ -201,7 +202,7 @@ export default function OntologyExplorerPage() {
               <rect width="100%" height="100%" fill="url(#grid)" />
             </svg>
 
-            <svg className="relative h-full w-full" viewBox="0 0 900 540">
+            <svg className="relative h-full w-full min-w-[760px] lg:min-w-0" viewBox="0 0 900 540">
               <defs>
                 <filter id="glow">
                   <feGaussianBlur stdDeviation="3" result="coloredBlur"/>

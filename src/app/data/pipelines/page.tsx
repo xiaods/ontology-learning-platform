@@ -176,7 +176,7 @@ export default function PipelineBuilderPage() {
       </div>
 
       {/* Tab navigation */}
-      <div className="mb-6 flex gap-1 rounded-lg bg-gray-900 p-1 border border-gray-800">
+      <div className="mb-6 flex flex-wrap gap-1 rounded-lg bg-gray-900 p-1 border border-gray-800">
         {[
           { id: 'learn' as const, label: '📖 管道原理', desc: '理解每个阶段' },
           { id: 'simulate' as const, label: '🔬 实时模拟', desc: '看数据流动' },
@@ -319,7 +319,7 @@ function LearnView() {
         </div>
 
         {/* Pipeline flow diagram */}
-        <div className="rounded-xl border border-gray-800 bg-gray-900 p-4">
+        <div className="overflow-x-auto rounded-xl border border-gray-800 bg-gray-900 p-4">
           <div className="flex items-center justify-between">
             {stageDetails.map((stage, i) => (
               <div key={stage.id} className="flex items-center">
@@ -412,7 +412,7 @@ function SimulateView() {
   return (
     <div className="space-y-6">
       {/* Controls */}
-      <div className="flex items-center justify-between rounded-xl border border-gray-800 bg-gray-900 p-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-gray-800 bg-gray-900 p-4">
         <div className="flex items-center gap-4">
           <div>
             <div className="text-xs text-gray-500">Pipeline</div>
@@ -424,7 +424,7 @@ function SimulateView() {
             <div className="text-sm text-emerald-400 font-mono">{throughput[pipeline.id] || 0}</div>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2">
             <span className="text-xs text-gray-500">Speed:</span>
             {[1, 2, 5].map(s => (

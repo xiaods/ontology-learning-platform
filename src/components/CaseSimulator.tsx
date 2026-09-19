@@ -354,11 +354,12 @@ export default function CaseSimulator({ caseStudy }: { caseStudy: CaseStudy }) {
           </div>
 
           {/* Graph */}
+          <p className="mb-2 text-xs text-gray-500 lg:hidden">左右滑动查看完整图谱，轻点节点查看详情。</p>
           <div id="case-graph" className="mb-3 scroll-mt-20 text-sm text-gray-400">
             本案例本体关系图
             {started && <span className="ml-3 text-blue-300">蓝色高亮：当前环节涉及的对象与关系</span>}
           </div>
-          <div className="relative overflow-hidden rounded-xl border border-gray-800 bg-gray-900" style={{ height: 520 }}>
+          <div className="graph-viewport relative overflow-x-auto rounded-xl border border-gray-800 bg-gray-900" style={{ height: 520 }}>
             <svg className="absolute inset-0 h-full w-full opacity-10">
               <defs>
                 <pattern id="case-grid" width="40" height="40" patternUnits="userSpaceOnUse">
@@ -368,7 +369,7 @@ export default function CaseSimulator({ caseStudy }: { caseStudy: CaseStudy }) {
               <rect width="100%" height="100%" fill="url(#case-grid)" />
             </svg>
 
-            <svg className="relative h-full w-full" viewBox="0 0 900 520">
+            <svg className="relative h-full w-full min-w-[760px] lg:min-w-0" viewBox="0 0 900 520">
               <defs>
                 <filter id="case-glow">
                   <feGaussianBlur stdDeviation="3" result="coloredBlur" />

@@ -21,7 +21,7 @@ export default function ObjectTypesPage() {
 
   return (
     <div className="mx-auto max-w-7xl">
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-white">Object Types</h1>
           <p className="text-sm text-gray-400">定义真实世界实体的 schema</p>
@@ -91,7 +91,7 @@ function ObjectDetail({ object }: { object: typeof objectTypes[0] }) {
 
   return (
     <div className="rounded-xl border border-gray-800 bg-gray-900 p-6">
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <span className="text-2xl">{object.icon}</span>
           <div>
@@ -188,7 +188,7 @@ function AddObjectTypeForm({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="rounded-xl border border-gray-800 bg-gray-900 p-6">
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h2 className="text-lg font-bold text-white">New Object Type</h2>
         <button onClick={onClose} className="text-gray-400 hover:text-white">✕</button>
       </div>
@@ -222,7 +222,7 @@ function AddObjectTypeForm({ onClose }: { onClose: () => void }) {
                     newProps[i].name = e.target.value;
                     setProperties(newProps);
                   }}
-                  className="input col-span-4"
+                  className="input col-span-6 sm:col-span-4"
                   placeholder="name"
                 />
                 <select
@@ -232,7 +232,7 @@ function AddObjectTypeForm({ onClose }: { onClose: () => void }) {
                     newProps[i].type = e.target.value;
                     setProperties(newProps);
                   }}
-                  className="input col-span-2"
+                  className="input col-span-6 sm:col-span-2"
                 >
                   {['String', 'Integer', 'Double', 'Boolean', 'DateTime'].map(t => (
                     <option key={t} value={t}>{t}</option>
@@ -245,10 +245,10 @@ function AddObjectTypeForm({ onClose }: { onClose: () => void }) {
                     newProps[i].description = e.target.value;
                     setProperties(newProps);
                   }}
-                  className="input col-span-5"
+                  className="input col-span-10 sm:col-span-5"
                   placeholder="description"
                 />
-                <label className="col-span-1 flex items-center justify-center text-xs text-gray-400">
+                <label className="col-span-2 sm:col-span-1 flex items-center justify-center text-xs text-gray-400">
                   <input
                     type="checkbox"
                     checked={prop.required}

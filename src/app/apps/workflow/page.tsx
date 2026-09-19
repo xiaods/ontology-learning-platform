@@ -141,7 +141,7 @@ export default function WorkflowSimulatorPage() {
 
   return (
     <div className="mx-auto max-w-7xl">
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-white">Action Workflow Simulator</h1>
           <p className="text-sm text-gray-400">Onyx 供应中断响应 — 逐步执行 Action 链</p>

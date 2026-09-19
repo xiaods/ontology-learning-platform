@@ -39,7 +39,7 @@ export default function WorkshopPage() {
 
   return (
     <div className="mx-auto max-w-7xl">
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-white">Workshop</h1>
           <p className="text-sm text-gray-400">应用组装台 — 将 Ontology 能力组合为业务应用</p>

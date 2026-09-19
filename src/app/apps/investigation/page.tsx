@@ -211,7 +211,7 @@ export default function InvestigationPage() {
 
   return (
     <div className="mx-auto max-w-7xl">
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-white">Investigation</h1>
           <p className="text-sm text-gray-400">实例探索查询 — 关联关系可视化</p>
@@ -220,7 +220,7 @@ export default function InvestigationPage() {
       </div>
 
       {/* Search Bar */}
-      <div className="mb-4 flex gap-3">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row">
         <div className="relative flex-1">
           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">🔍</span>
           <input
@@ -234,7 +234,7 @@ export default function InvestigationPage() {
         <select
           value={searchFilter}
           onChange={e => setSearchFilter(e.target.value)}
-          className="input w-44"
+          className="input sm:w-44"
         >
           <option value="all">All Types</option>
           {objectTypes.map(obj => (
@@ -280,9 +280,9 @@ export default function InvestigationPage() {
 
         {/* Relationship Graph */}
         <div className="lg:col-span-3">
-          <div className="rounded-xl border border-gray-800 bg-gray-900 overflow-hidden" style={{ height: 540 }}>
+          <div className="rounded-xl border border-gray-800 bg-gray-900 overflow-x-auto" style={{ height: 540 }}>
             {selectedInstance ? (
-              <svg className="h-full w-full" viewBox="0 0 980 420">
+              <svg className="h-full w-full min-w-[760px] lg:min-w-0" viewBox="0 0 980 420">
                 <defs>
                   <filter id="instance-glow">
                     <feGaussianBlur stdDeviation="3" result="blur" />
