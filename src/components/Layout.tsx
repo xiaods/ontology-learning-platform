@@ -31,6 +31,12 @@ const navSections = [
     ],
   },
   {
+    label: '知识体系',
+    items: [
+      { href: '/handbook', label: '本体知识地图', icon: '📖', desc: '知识点与演示互链' },
+    ],
+  },
+  {
     label: '真实案例',
     items: [
       { href: '/cases', label: '案例库', icon: '📚', desc: '2026 本体落地案例' },

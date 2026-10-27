@@ -11,6 +11,7 @@
     "verify:cases": "tsx scripts/verify-cases.ts",
     "gen:cases": "tsx scripts/gen-case-library.ts",
     "verify:simulation": "node --import tsx scripts/verify-simulation.ts",
+    "verify:handbook": "node --import tsx scripts/verify-handbook.ts",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",

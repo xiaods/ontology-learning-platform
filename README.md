@@ -68,6 +68,17 @@
 
 模拟中的客户与场景为官方披露事实，具体对象、记录数与计算结果为浏览器内模拟，并在页面顶部按「官方事实 / 官方声称 / 模拟数据」三级逐条标注。案例库教材（`textbook/案例库.md`）由 `npm run gen:cases` 从同一份事实数据生成，`npm run verify:cases` 校验各案例在边界参数下的计算与阶段引用。
 
+## 知识点与交互案例如何结合
+
+教材讲概念、演示给操作，两者容易各说各话。本项目用一层数据把它们连起来：
+
+- **端到端演示的每一步**，右侧都会列出这一步涉及的知识点、对应的成熟度等级（L0–L5）、一个思考题，以及**这一步没有演示什么**。
+- **每个知识点**在 `/handbook` 中反向指回它在演示中的阶段，以及它在本平台模型里对应的对象、关系、操作或接口。
+
+这些关联写在 `src/data/handbook-journey-map.ts`，知识点本身写在 `src/data/handbook-knowledge.ts`。`npm run verify:handbook` 会校验：知识点 id 唯一、所有关系引用都存在于本体模型、六个阶段全部有映射、阶段标题与 `OntologyJourney.tsx` 保持一致（防止改文案后知识点悄悄错位）、以及每个非治理类知识点都能在演示中找到落点。
+
+知识来源为 [Executable Ontology Handbook](https://github.com/awch-D/Executable-Ontology-Handbook)（Apache-2.0，独立社区教学项目，与 Palantir 无隶属或授权关系）。本项目是提炼而非复制，术语与定义以手册及其引用的一手资料为准。
+
 ## 继续探索平台
 
 围绕同一个业务场景，从模型定义走到数据集成与应用交互。
@@ -88,6 +99,7 @@
 | 真实案例 | 航网运营恢复 | American Airlines：天气事件沿关系传播与恢复 | `/cases/american-airlines` |
 | 真实案例 | 软件工厂交付 | 陆军软件工厂 + Agentik：Agent 起草、人工审批 | `/cases/army-software-factory` |
 | 真实案例 | 文档知识图谱 | 4000 万文档结构化与保留问题验证 | `/cases/document-graph` |
+| 知识体系 | 本体知识地图 | 25 个知识点与演示双向互链、L0–L5 成熟度 | `/handbook` |
 
 示例模型包含原料、供应商、采购单、产线、产品、物料清单、供应中断和决策日志八类对象，贯穿「数据 → 模型 → 决策 → 行动」的学习过程。
 
@@ -125,6 +137,7 @@ npm start
 | 产品设计 | [Palantir Ontology 设计笔记](materials/section3/palantir-ontology-design-notes.md) |
 | 落地实施 | [实施路径与能力建设](materials/section4/implementation-notes.md) |
 | 教学与练习 | [讲师手册](textbook/讲师手册.md) · [案例库](textbook/案例库.md) · [练习题集](textbook/练习题集.md) · [作业集](textbook/作业集.md) |
+| 知识地图 | [`/handbook`](http://localhost:3000/handbook) 页面：25 个知识点与演示互链 |
 
 ## 项目结构
 
@@ -137,6 +150,8 @@ src/
 │   └── Layout.tsx          # 导航与页面布局
 ├── data/
 │   ├── ontology-model.ts   # 对象、关系、操作与接口定义
+│   ├── handbook-knowledge.ts   # 手册知识点提炼（可引用、带章节溯源）
+│   ├── handbook-journey-map.ts # 知识点 ↔ 演示阶段的双向映射
 │   └── cases/              # 案例数据包与案例库事实源
 └── lib/
     └── graph-geometry.ts   # 图谱几何、粒子与路径查找（首页与案例共用）
@@ -155,4 +170,4 @@ docs/                      # 项目文档与介绍截图
 
 ## 演示审查与验证
 
-[审查清单与改进说明](docs/ontology-demo-review.md)记录模型语义、审批状态、组装台与图谱交互的修复。运行 `npm run verify:simulation` 验证演示状态边界；工作流审批由 Action 模型驱动，另设到货确认。
+[审查清单与改进说明](docs/ontology-demo-review.md)记录模型语义、审批状态、组装台与图谱交互的修复。运行 `npm run verify:simulation` 验证演示状态边界；工作流审批由 Action 模型驱动，另设到货确认。运行 `npm run verify:handbook` 校验知识点与演示阶段的映射完整性。

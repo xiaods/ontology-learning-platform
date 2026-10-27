@@ -1,7 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { StageKnowledgeStrip } from '@/components/KnowledgeCard';
+import { stageKnowledgeByIndex } from '@/data/handbook-journey-map';
+import { getKnowledgePoint } from '@/data/handbook-knowledge';
 
 const stages = [
   { title: '接入业务数据', subtitle: '让系统里的记录进来', role: '数据工程师', skills: 'API / SQL · 增量同步 · 数据契约', deliverable: '可追溯的源数据表，保留来源、主键与采集时间。', production: '配置连接凭证、同步水位、重试和延迟告警。', href: '/data/sources', nodes: ['supplier', 'raw-material'] },
@@ -23,6 +26,12 @@ export default function OntologyJourney({ onStageChange }: { onStageChange: (nod
   const shortage = Math.max(0, days * 100 - 300);
   const blocked = step === 1 && invalid;
   const awaitingApproval = step === 4 && shortage > 0 && !approved;
+
+  const stageKnowledge = stageKnowledgeByIndex[step];
+  const stagePoints = useMemo(
+    () => (stageKnowledge?.pointIds ?? []).map(getKnowledgePoint).filter((p): p is NonNullable<typeof p> => Boolean(p)),
+    [stageKnowledge],
+  );
 
   useEffect(() => {
     if (started) onStageChange(stages[step].nodes);
@@ -96,6 +105,14 @@ export default function OntologyJourney({ onStageChange }: { onStageChange: (nod
           <div className="mt-4 border-t border-gray-800 pt-4"><p className="text-xs text-gray-500">生产落地还需实现</p><p className="mt-2 text-sm leading-6 text-gray-300">{stage.production}</p></div>
           <Link href={stage.href} className="mt-4 inline-block text-sm text-blue-400 hover:text-blue-200">查看相关平台模块 ↗</Link>
           <p className="mt-4 text-xs leading-5 text-gray-500">贯穿全链路：权限控制、测试、版本管理与可观测性。团队可一人承担多种角色，交付能力需要覆盖全部环节。</p>
+          {stageKnowledge && stagePoints.length > 0 && (
+            <StageKnowledgeStrip
+              points={stagePoints}
+              maturity={stageKnowledge.maturity}
+              checkQuestion={stageKnowledge.checkQuestion}
+              boundary={stageKnowledge.boundary}
+            />
+          )}
         </aside>
       </div>
       <div className="flex flex-wrap gap-x-6 gap-y-2 border-t border-gray-800 px-5 py-3 text-xs text-gray-400"><span>业务结果：{step < 3 ? '等待影响计算' : `补货缺口 ${shortage} kg`}</span><span>采购单：{step >= 4 && approved && shortage > 0 ? 'PO-DEMO-001（模拟）' : '未创建'}</span><span>审计：{step === 5 ? 'LOG-DEMO-001（模拟）' : '等待闭环'}</span><a href="#ontology-graph" className="text-blue-400">↓ 查看本步涉及的本体关系</a></div>

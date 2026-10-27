@@ -45,6 +45,8 @@ npm-debug.log*
 
 # LoopX process locks are ephemeral
 .loopx/*.lock
+# Nested lifecycle artifacts produced when loopx runs with --project .
+.loopx/.loopx/
 
 # OpenNext
 .open-next
